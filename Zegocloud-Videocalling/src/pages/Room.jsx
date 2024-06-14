@@ -21,7 +21,7 @@ const Room = () => {
       sharedLinks: [
         {
           name: "Copy Link",
-          url: `http://localhost:5173/room/${roomId}`,
+          url: `https://zego-cloud-vc.vercel.app/${roomId}`,
         },
       ],
       scenario: {
