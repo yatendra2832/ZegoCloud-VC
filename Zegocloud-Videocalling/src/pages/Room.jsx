@@ -1,27 +1,42 @@
-import React from "react";
-
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+
 const Room = () => {
   const { roomId } = useParams();
+
   const myMeeting = async (element) => {
-    const appId = 1693531928;
-    const serverSecret = "649013b5d1376150cec63154115f1062";
+    if (!element) return;
+
+    const appId = Number(import.meta.env.VITE_APP_ID);
+    const serverSecret = import.meta.env.VITE_APP_SERVER_SECRET;
+
+    // Ensure appId is correctly converted to a number
+    if (isNaN(appId)) {
+      console.error("Invalid appId, it should be a number");
+      return;
+    }
+
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appId,
       serverSecret,
       roomId,
       Date.now().toString(),
-      "Yatendra Singh "
+      "Yatendra Singh"
     );
 
     const zc = ZegoUIKitPrebuilt.create(kitToken);
+    if (!zc) {
+      console.error("Failed to create ZegoUIKit instance");
+      return;
+    }
+
     zc.joinRoom({
       container: element,
       sharedLinks: [
         {
           name: "Copy Link",
-          url: `https://zego-cloud-vc.vercel.app/${roomId}`,
+          url: `https://zego-cloud-vc.vercel.app/room/${roomId}`,
         },
       ],
       scenario: {
@@ -31,12 +46,15 @@ const Room = () => {
     });
   };
 
+  useEffect(() => {
+    const container = document.getElementById("meeting-container");
+    myMeeting(container);
+  }, []);
+
   return (
-    <>
-      <div>
-        <div ref={myMeeting} />
-      </div>
-    </>
+    <div>
+      <div id="meeting-container" />
+    </div>
   );
 };
 
